@@ -100,3 +100,5 @@
 - 2026-06-06 CP5 実装完了（回転＋表示分離・JSON保存読込/migration・プロンプト・PWA）
 - 2026-06-06 ネット公開対応（PC不要）: `netlify.toml` / `public/_redirects` 追加、手順書 `ネット公開手順.png`。`npm run build`→`dist` をルート配信で 200 確認。Netlify Drop 推奨。
 - 2026-06-06 ホスティング非依存化: vite `base:'./'`(build時) + index.html/manifest/SW を相対パス化。ルート/サブパス両対応。GitHub Pages 自動デプロイ `.github/workflows/deploy.yml` と手順書 `GitHub公開手順.png` を追加。dev/build とも動作確認。
+- 2026-06-06 **本番公開済み**: GitHub Pages へデプロイ完了。リポジトリ https://github.com/John-Mori/ai-pose-doll （Public）。公開URL **https://john-mori.github.io/ai-pose-doll/** 。サブパスで index/JS/CSS/manifest/icon/sw すべて 200 確認。以後は main へ push で自動更新（Actions）。
+  - メモ: 初回は configure-pages の enablement 失敗 → REST API で Pages を build_type=workflow 有効化し再実行で成功。`.claude/` は公開対象外に（.gitignore）。
