@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* スマホ全画面・スクロール抑止（設計書 §6.3） */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+body {
+  background: #111827;
+  color: #f9fafb;
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans",
+    "Noto Sans JP", sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 3Dビューのcanvasはブラウザのスクロール/ズームに渡さない */
+canvas {
+  display: block;
+  touch-action: none;
+}

@@ -1,0 +1,11 @@
+# Netlify 設定（Git連携でデプロイする場合に使用）。
+# ドラッグ&ドロップ(app.netlify.com/drop)で公開するだけなら無くても動きます。
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA フォールバック（単一ページのため全パスを index.html へ）
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

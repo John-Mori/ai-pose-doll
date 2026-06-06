@@ -1,0 +1,46 @@
+# GitHub Pages へ自動デプロイ（main へ push すると公開／更新される）。
+# 相対ベース(base:'./')でビルドするので、プロジェクトサイト /<repo>/ でもそのまま動く。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 手動実行も可
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行を1つに（古いデプロイはキャンセル）
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true # 初回実行時に Pages を自動で有効化
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
