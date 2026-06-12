@@ -5,6 +5,7 @@ import MoveControls from "./MoveControls";
 import RotateControls from "./RotateControls";
 import CameraControls from "./CameraControls";
 import ExportPanel from "./ExportPanel";
+import ModelControls from "./ModelControls";
 
 // 設計書 §14.3 のタブ構成。CP2 では Pose / Move を有効化。
 const TABS = ["Pose", "Move", "Rotate", "Camera", "Export", "Check"] as const;
@@ -92,6 +93,7 @@ export default function BottomPanel() {
           >
             操作点: {showCP ? "ON" : "OFF"}
           </button>
+          <ModelControls />
         </div>
       )}
 

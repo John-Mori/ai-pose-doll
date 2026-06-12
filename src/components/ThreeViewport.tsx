@@ -6,6 +6,7 @@ import { createControlPoints } from "../three/createControlPoints";
 import { applyViewPreset, ASPECT_VALUE } from "../three/cameraPresets";
 import { exportPNG } from "../three/exportCanvas";
 import { viewportApi } from "../three/viewportApi";
+import type { CharacterBundle } from "../three/loadCharacter";
 import { usePoseStore } from "../pose/poseStore";
 import type { ControlPointName } from "../pose/poseTypes";
 
@@ -64,6 +65,36 @@ export default function ThreeViewport() {
       updateCameraBasis();
     };
 
+    // --- キャラモデル(VRM/GLB)の読込・追従 ---
+    let character: CharacterBundle | null = null;
+    const applyCharacterPose = () => {
+      if (!character) return;
+      const st = usePoseStore.getState();
+      character.applyPose(st.displayJoints, st.pose.rotations);
+    };
+    viewportApi.loadModel = async (data, fileName) => {
+      // three-vrm は重いので、初めてモデルを読むときだけ動的ロード（初期表示を軽く保つ）
+      const { loadCharacter } = await import("../three/loadCharacter");
+      const next = await loadCharacter(data, fileName);
+      if (character) {
+        sceneBundle.scene.remove(character.scene);
+        character.dispose();
+      }
+      character = next;
+      sceneBundle.scene.add(character.scene);
+      doll.group.visible = false; // モデル使用中はプリミティブを隠す
+      applyCharacterPose();
+      return character.name;
+    };
+    viewportApi.removeModel = () => {
+      if (character) {
+        sceneBundle.scene.remove(character.scene);
+        character.dispose();
+        character = null;
+      }
+      doll.group.visible = true;
+    };
+
     // --- カメラ基準ベクトルをストアへ供給（移動はカメラ相対・§8.3） ---
     const worldUp = new THREE.Vector3(0, 1, 0);
     const fwd = new THREE.Vector3();
@@ -102,6 +133,7 @@ export default function ThreeViewport() {
         lastDisplay = state.displayJoints;
         doll.update(lastDisplay);
         cp.update(lastDisplay, state.pose.poles);
+        applyCharacterPose(); // モデル使用時は追従
       }
       if (state.pose.poles !== lastPoles) {
         lastPoles = state.pose.poles;
@@ -159,9 +191,12 @@ export default function ThreeViewport() {
 
     // --- 描画ループ（React外） ---
     let raf = 0;
+    const clock = new THREE.Clock();
     const animate = () => {
       raf = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
       sceneBundle.controls.update();
+      if (character) character.update(delta); // springbone(髪揺れ)等
       sceneBundle.renderer.render(sceneBundle.scene, sceneBundle.camera);
     };
     animate();
@@ -178,6 +213,13 @@ export default function ThreeViewport() {
       delete viewportApi.exportPNG;
       delete viewportApi.getCameraState;
       delete viewportApi.setCameraState;
+      delete viewportApi.loadModel;
+      delete viewportApi.removeModel;
+      if (character) {
+        sceneBundle.scene.remove(character.scene);
+        character.dispose();
+        character = null;
+      }
       cp.dispose();
       doll.dispose();
       sceneBundle.dispose();

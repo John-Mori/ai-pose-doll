@@ -13,7 +13,14 @@ dist-ssr
 # 公開不要のローカル成果物・手順書（必要なら外す）
 pubtest/
 
+# 3Dモデル（大容量バイナリ。実行時にファイル選択で読み込むため同梱しない）
+*.vrm
+*.glb
+
 # logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# TypeScript incremental build cache
+*.tsbuildinfo

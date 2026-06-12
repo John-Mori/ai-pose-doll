@@ -11,6 +11,10 @@ export interface ViewportApi {
   exportPNG: (opts: ExportOptions) => Promise<Blob | null>;
   getCameraState: () => CameraSettings;
   setCameraState: (camera: CameraSettings) => void;
+  /** VRM/GLB キャラモデルを読み込みポーズに追従させる。失敗時は throw。 */
+  loadModel: (data: ArrayBuffer, fileName: string) => Promise<string>;
+  /** モデルを外してプリミティブ人形へ戻す */
+  removeModel: () => void;
 }
 
 export const viewportApi: Partial<ViewportApi> = {};

@@ -69,6 +69,8 @@ export interface PoseStore {
   moveStep: number;
   rotationStep: number;
   warnings: string[];
+  /** 読込中のキャラモデル名（null=プリミティブ人形）。UI表示用 */
+  modelName: string | null;
 
   /** Three側が更新するカメラ基準（§8.3） */
   cameraBasis: CameraBasis;
@@ -77,6 +79,7 @@ export interface PoseStore {
   selectJoint: (joint: ControlPointName | null) => void;
   setMoveStep: (step: number) => void;
   setCameraBasis: (basis: CameraBasis) => void;
+  setModelName: (name: string | null) => void;
   moveSelectedJoint: (direction: MoveDirection) => void;
   setRotationStep: (step: number) => void;
   rotateSelectedJoint: (axis: RotationAxis, sign: number) => void;
@@ -155,6 +158,7 @@ export const usePoseStore = create<PoseStore>((set) => ({
   rotationStep: 10, // 度（設計書 §8.4）
 
   warnings: [],
+  modelName: null,
 
   cameraBasis: {
     right: [1, 0, 0],
@@ -168,6 +172,7 @@ export const usePoseStore = create<PoseStore>((set) => ({
   },
   setMoveStep: (step) => set({ moveStep: step }),
   setCameraBasis: (basis) => set({ cameraBasis: basis }),
+  setModelName: (name) => set({ modelName: name }),
 
   moveSelectedJoint: (direction) =>
     set((s) => {
