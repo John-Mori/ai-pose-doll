@@ -1,35 +1,41 @@
 import * as THREE from "three";
 import type { JointName, Vec3 } from "../pose/poseTypes";
 
-/** 骨格セグメント（設計書 §9.2 / §10.4 のツリーに対応） */
+/**
+ * 骨格セグメントの半径（体型資料: 7頭身スリム女性）。
+ * 胴体は「胸(やや太)→くびれ(spineを細く)→腰(太)」でラインを表現。手脚は細め、脚＞腕。
+ */
 const BONES: Array<[JointName, JointName, number]> = [
   // [from, to, 半径]
-  ["pelvis", "chest", 0.11], // 胴体（spine）
-  ["chest", "neck", 0.05],
-  ["neck", "head", 0.045],
-  // 腕
-  ["chest", "leftShoulder", 0.05],
-  ["leftShoulder", "leftElbow", 0.045],
-  ["leftElbow", "leftWrist", 0.04],
-  ["chest", "rightShoulder", 0.05],
-  ["rightShoulder", "rightElbow", 0.045],
-  ["rightElbow", "rightWrist", 0.04],
-  // 脚
+  ["pelvis", "chest", 0.085], // 胴体（spine）＝くびれ。胸/腰の球より細くする
+  ["chest", "neck", 0.04],
+  ["neck", "head", 0.038],
+  // 腕（細め）
+  ["chest", "leftShoulder", 0.04],
+  ["leftShoulder", "leftElbow", 0.036],
+  ["leftElbow", "leftWrist", 0.03],
+  ["chest", "rightShoulder", 0.04],
+  ["rightShoulder", "rightElbow", 0.036],
+  ["rightElbow", "rightWrist", 0.03],
+  // 脚（腕より太く、太もも＞ふくらはぎ）
   ["pelvis", "leftHip", 0.05],
-  ["leftHip", "leftKnee", 0.06],
-  ["leftKnee", "leftAnkle", 0.05],
+  ["leftHip", "leftKnee", 0.058],
+  ["leftKnee", "leftAnkle", 0.042],
   ["pelvis", "rightHip", 0.05],
-  ["rightHip", "rightKnee", 0.06],
-  ["rightKnee", "rightAnkle", 0.05],
+  ["rightHip", "rightKnee", 0.058],
+  ["rightKnee", "rightAnkle", 0.042],
 ];
 
-/** 関節の球の半径（head は大きめ） */
+/**
+ * 関節の球の半径。head は7頭身ぶん小さめ。
+ * chest=バスト、pelvis=ヒップで、間の spine(0.085) よりやや太くしてくびれを出す。
+ */
 const JOINT_RADIUS: Partial<Record<JointName, number>> = {
-  head: 0.13,
-  chest: 0.09,
-  pelvis: 0.1,
+  head: 0.114, // 7頭身: 頭の高さ ≈ 全高1.6/7 ≈ 0.229（直径）
+  chest: 0.1, // バスト/胸郭
+  pelvis: 0.118, // ヒップ（最も広い）
 };
-const DEFAULT_JOINT_RADIUS = 0.045;
+const DEFAULT_JOINT_RADIUS = 0.035; // 肩肘膝足首など＝細い関節
 
 const UP = new THREE.Vector3(0, 1, 0);
 
